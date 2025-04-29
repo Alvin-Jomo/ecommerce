@@ -1,0 +1,286 @@
+ {% load static %}
+{% load humanize %}
+{% block content %}
+
+<section class="content-main">
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 14px;
+            border: 1px solid #000;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header .logo-container {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            margin-right: auto;
+        }
+        .header .logo-container img {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .header .title {
+            text-align: center; /* Center the title */
+            flex-grow: 1;
+            margin-left: 20px;
+        }
+        .header .date-info {
+            text-align: right;
+        }
+        .input-group {
+            margin-bottom: 8px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 4px 0 12px 0;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 3px;
+            text-align: left;
+        }
+        .total-section {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        .total-section span {
+            padding-left: 14px;
+        }
+        .totals-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+        .vat-summary, .totals-summary {
+            border: 1px solid black;
+            padding: 2px;
+            width: 48%;
+        }
+        .vat-summary table, .totals-summary table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .vat-summary th, .vat-summary td, .totals-summary th, .totals-summary td {
+            border: 1px solid black;
+            padding: 1px;
+            text-align: left;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        @media print {
+            button, .add-item-btn {
+                display: none;
+            }
+            .container {
+                border: none;
+            }
+            body {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header section with logo, title, and date -->
+    <div class="header">
+        <div class="logo-container">
+            <img src="{% static 'assets/imgs/banner/alvin.jpg' %}" alt="Evely Fresh Logo" />
+            <p>ALVOTHEBOSS</p>
+        </div>
+        <div class="title">
+            <h1>Estimate</h1>
+        </div>
+        <div class="date-info">
+            <p>Date: <span id="currentDate"></span></p>
+            <p>Estimate #: <span id="estimateNumber"></span></p>
+        </div>
+    </div>
+
+    <!-- Form details -->
+    <div class="input-group">
+        <label for="name">Name / Address</label>
+        <textarea id="name" placeholder="Enter Name / Address"></textarea>
+    </div>
+
+    <!-- Table with items -->
+    <table id="itemsTable">
+        <thead>
+            <tr>
+                <th>Qty</th>
+                <th>Item</th>
+                <th>Description</th>
+                <th>Rate</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="number" id="qty1" oninput="calculateTotal(1)" value="1"></td>
+                <td><input type="text" id="item1" placeholder="Enter item"></td>
+                <td><input type="text" id="description1" placeholder="Enter description"></td>
+                <td><input type="number" id="rate1" oninput="calculateTotal(1)" placeholder="Enter rate"></td>
+                <td id="total1">0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- VAT Summary and Totals section -->
+    <div class="totals-container">
+        <!-- Left column: VAT Summary -->
+        <div class="vat-summary">
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2">VAT Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Rate</td>
+                        <td>0%</td>
+                    </tr>
+                    <tr>
+                        <td>VAT</td>
+                        <td>0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Net</td>
+                        <td id="finalTotal">0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Company VAT Number: P052324470B</p>
+        </div>
+
+        <!-- Right column: Totals Summary -->
+        <div class="totals-summary">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Subtotal</td>
+                        <td id="subtotal-right">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>VAT</td>
+                        <td id="vat-right">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Total</td>
+                        <td id="subtotal">0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add item button -->
+    <button class="add-item-btn" onclick="addRow()">Add Item</button>
+
+    <!-- Print button -->
+    <button onclick="printForm()">Print</button>
+
+<a href="javascript:void(0);" onclick="goBack()"><button>Go Back</button></a>
+</div>
+<h3 align="center">This is not a V.A.T invoice</h3>
+
+<script>
+    let estimateNumber = 1;
+    let rowCount = 1;
+    let vatRate = 0;
+
+    // Set current date
+    document.getElementById('currentDate').innerHTML = new Date().toLocaleDateString();
+
+    // Set estimate number (auto-increment)
+    document.getElementById('estimateNumber').innerHTML = estimateNumber++;
+
+    // Function to calculate total for each row
+    function calculateTotal(row) {
+        const qty = parseFloat(document.getElementById(`qty${row}`).value) || 0;
+        const rate = parseFloat(document.getElementById(`rate${row}`).value) || 0;
+        const total = qty * rate;
+        document.getElementById(`total${row}`).innerHTML = total.toFixed(2);
+        updateTotals();
+    }
+
+    // Function to update subtotal and final total
+    function updateTotals() {
+        let subtotal = 0;
+        for (let i = 1; i <= rowCount; i++) {
+            subtotal += parseFloat(document.getElementById(`total${i}`).innerHTML) || 0;
+        }
+        const vat = subtotal * vatRate;
+        const finalTotal = subtotal + vat;
+
+        document.getElementById('subtotal').innerHTML = subtotal.toFixed(2);
+        document.getElementById('subtotal-right').innerHTML = subtotal.toFixed(2);
+        document.getElementById('vat').innerHTML = vat.toFixed(2);
+        document.getElementById('vat-right').innerHTML = vat.toFixed(2);
+        document.getElementById('finalTotal').innerHTML = finalTotal.toFixed(2);
+    }
+
+    // Function to add a new row
+    function addRow() {
+        rowCount++;
+        const table = document.getElementById('itemsTable').getElementsByTagName('tbody')[0];
+        const row = table.insertRow();
+        row.innerHTML = `
+            <td><input type="number" id="qty${rowCount}" oninput="calculateTotal(${rowCount})" value="1"></td>
+            <td><input type="text" id="item${rowCount}" placeholder="Enter item"></td>
+            <td><input type="text" id="description${rowCount}" placeholder="Enter description"></td>
+            <td><input type="number" id="rate${rowCount}" oninput="calculateTotal(${rowCount})" placeholder="Enter rate"></td>
+            <td id="total${rowCount}">0</td>
+        `;
+    }
+
+    // Function to print the form
+    function printForm() {
+        window.print();
+    }
+
+     function goBack() {
+        window.history.back(); // This will take the user to the previous page in the history
+    }
+</script>
+
+</body>
+</html>
+{% endblock content %}

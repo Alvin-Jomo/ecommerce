@@ -1,0 +1,86 @@
+{% extends 'useradmin/base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h1 style="color: brown"><b>ALVOTHEBOSS ORDERS DASHBOARD</b></h1>
+            <p>Manage all your orders from here</p>
+        </div>
+        <div style="position: relative; border: 2px solid #ccc; border-radius: 8px; padding: 5px; display: flex; align-items: center;">
+            <input type="text" id="searchInput" placeholder="Search order ID" class="form-control bg-white"
+                   style="border: none; outline: none; width: 100%;" />
+            <span style="position: absolute; right: 10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="gray" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zm-5.241.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+                </svg>
+            </span>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <header class="card-header" align="center">
+            <h2 class="content-title card-title">Order List</h2>
+        </header>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>#ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Manager</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Order Status</th>
+                            <th scope="col">Payment Status</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in orders %}
+                            <tr>
+                                <td>#{{ c.oid }}</td>
+                                <td><b>{{ c.full_name|title }}</b></td>
+                                <td>{{ c.email }}</td>
+                                <td>{{ c.manager }}</td>
+                                <td>{{ c.location }}</td>
+                                <td>Ksh{{ c.price|floatformat:2 }}</td>
+                                <td><span class="badge alert-secondary">Pending</span></td>
+                                {% if c.paid_status %}
+                                    <td><span class="badge alert-success">Paid</span></td>
+                                {% else %}
+                                    <td><span class="badge alert-danger">Not Paid</span></td>
+                                {% endif %}
+                                <td>
+                                    <a href="{% url 'useradmin:order_detail' c.id %}" class="btn btn-md rounded font-sm">View Detail</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.getElementById('searchInput').addEventListener('input', function() {
+    const searchQuery = this.value.toLowerCase();
+    const tableRows = document.querySelectorAll('#ordersTable tbody tr');
+
+    tableRows.forEach(row => {
+        const idCell = row.querySelector('td').textContent.toLowerCase();
+        if (idCell.includes(searchQuery)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+</script>
+
+{% endblock content %}

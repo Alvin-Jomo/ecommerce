@@ -1,0 +1,563 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AlvoTheBoss</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+
+    <meta name="description" content="" />
+    <meta property="og:title" content="" />
+    <meta property="og:type" content="" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="" />
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="assets/imgs/theme/favicon.svg" />
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="assets/css/plugins/slider-range.css" />
+    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+</head>
+
+<body>
+
+    <header class="header-area header-style-1 header-height-2">
+        <div class="mobile-promotion">
+            <span>Grand opening, <strong>up to 10%</strong> off all items. Only <strong>3 days</strong> left</span>
+        </div>
+        <div class="header-top header-top-ptb-1 d-none d-lg-block">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-xl-3 col-lg-5">
+                        <div class="header-info">
+                            <ul>
+
+                                <li><a href="{% url 'core:dashboard' %}">My Account</a></li>
+                                <li><a href="{% url 'core:wishlist' %}">Wishlist</a></li>
+                                                  </ul>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-4">
+                        <div class="text-center">
+                            <div id="news-flash" class="d-inline-block">
+                                <ul>
+                                    <li>AlvoTheBoss company loves you all</li>
+                                    <li>we love our customer</li>
+                                    <li>we offer delivery country-wide</li>
+                                    <li>Supper Value Deals - Save money by trading with us</li>
+                                    <li>find all at AlvoTheBoss</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="header-info header-info-right">
+                            <ul>
+                                <li>
+                                  Need help? Call Us:
+                                    <a href="https://wa.me/254707249256" target="_blank" class="text-brand">
+                                      <strong>+254707249256</strong>
+                                    </a>
+                                </li>
+
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
+            <div class="container">
+                <div class="header-wrap">
+           <div class="logo logo-width-1">
+                       <a href="/"><img src="{% static 'assets/imgs/banner/alvin.jpg' %}" alt="logo" /></a>
+                    </div>
+
+
+                    <div class="header-right">
+                        <div class="search-style-2">
+
+                        </div>
+
+                        <div class="header-action-right">
+                            <div class="header-action-2">
+                   <div class="search-location" style="text-align: center; margin: 20px;">
+
+
+    <button
+        id="locationButton"
+        style="padding: 5px 10px; font-size: 12px; border-radius: 5px; border: 1px solid #ccc; background-color: #007BFF; color: white; cursor: pointer;">
+        Our Location
+    </button>
+</div>
+
+<!-- Hidden Google Map Embed -->
+<div id="mapContainer" style="text-align: center; margin-top: 20px; display: none;">
+    <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.842169933906!2d36.86104784161263!3d-1.3094196647625065!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1f0c4ed0c60b%3A0x2c993d167c9f345f!2sLungalunga%2C%20Nairobi%2C%20Kenya!5e0!3m2!1sen!2s!4v1692902409997!5m2!1sen!2s"
+        width="600"
+        height="450"
+        style="border:0; border-radius: 10px;"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+</div>
+
+<script>
+    // JavaScript to show/hide the map when the button is clicked
+    document.getElementById('locationButton').addEventListener('click', function() {
+        var mapContainer = document.getElementById('mapContainer');
+        if (mapContainer.style.display === 'none') {
+            mapContainer.style.display = 'block';
+        } else {
+            mapContainer.style.display = 'none';
+        }
+    });
+</script>
+
+
+                                <div class="header-action-icon-2">
+                                    <a href="{% url 'core:wishlist' %}">
+                                        <img class="svgInject" alt="E-commerce" src="{% static 'assets/imgs/theme/icons/icon-heart.svg' %}" />
+                                        {% if request.user.is_authenticated %}
+                                        <span class="pro-count blue">{{ wishlist.count }}</span>
+                                        {% else %}
+                                        <span class="pro-count blue">0</span>
+                                        {% endif %}
+                                    </a>
+                                    <a href="{% url 'core:wishlist' %}"><span class="lable">Wishlist</span></a>
+                                </div>
+                                <div class="header-action-icon-2">
+                                    <a class="mini-cart-icon" href="{% url 'core:cart' %}">
+                                        <img alt="E-commerce" src="{% static 'assets/imgs/theme/icons/icon-cart.svg' %}" />
+                                        <span class="pro-count blue cart-items-count">{{ request.session.cart_data_obj|length }}</span>
+                                    </a>
+                                    <a href="{% url 'core:cart' %}"><span class="lable">Cart</span></a>
+                                    <div class="cart-dropdown-wrap cart-dropdown-hm2">
+
+                                        <div class="shopping-cart-footer">
+
+                                            <div class="shopping-cart-button">
+                                                <a href="{% url 'core:cart' %}" class="outline">View Your cart</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="header-action-icon-2">
+                                    <a href="{% url 'core:dashboard' %}">
+                                        <img class="svgInject" alt="E-commerce" src="{% static 'assets/imgs/theme/icons/icon-user.svg' %}" />
+                                    </a>
+                                    <a href="{% url 'core:dashboard' %}"><span class="lable ml-0">Account</span></a>
+                                    <div class="cart-dropdown-wrap cart-dropdown-hm2 account-dropdown">
+                                        <ul>
+                                            <li><a href="{% url 'core:dashboard' %}"><i class="fi fi-rs-user mr-10"></i>My Account</a></li>
+                                            <li><a href="{% url 'useradmin:dashboard' %}"><i class="fi fi-rs-user mr-10"></i>Admin Dashboard</a></li>
+                                            <!-- <li><a href="#"><i class="fi fi-rs-location-alt mr-10"></i>Order Tracking</a></li> -->
+                                            <li><a href="{% url 'core:wishlist' %}"><i class="fi fi-rs-heart mr-10"></i>My Wishlist</a></li>
+                                            <li><a href="{% url 'core:dashboard' %}"><i class="fi fi-rs-settings-sliders mr-10"></i>Setting</a></li>
+
+                                            {% if request.user.is_authenticated %}
+                                            <li><a href="{% url 'userauths:sign-out' %}"><i class="fi fi-rs-sign-out mr-10"></i>Sign out</a></li>
+                                            {% else %}
+                                            <li><a href="{% url 'userauths:sign-in' %}"><i class="fi fi-rs-sign-in mr-10"></i>Sign In</a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-bottom header-bottom-bg-color sticky-bar">
+            <div class="container">
+                <div class="header-wrap header-space-between position-relative">
+                    <div class="logo logo-width-1 d-block d-lg-none" style="text-align: left;">
+                        <a href="{% url 'core:index' %}"><img src="{% static 'assets/imgs/banner/alvin.jpg'%}" alt="logo" style="height: 40px; width: 50px;" /></a>
+                    </div>
+                    <div class="header-nav d-none d-lg-flex">
+                        <div class="main-categori-wrap d-none d-lg-block">
+
+
+                        </div>
+                        <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block font-heading">
+                            <nav>
+
+                            </nav>
+                        </div>
+                    </div>
+                     <!--<div class="main-categori-wrap d-none d-lg-block">-->
+                     <!--       <a class="categories-button-active" href="#">-->
+                     <!--           <span class="fi-rs-apps"></span> <span class="et">Browse</span> All Categories-->
+                     <!--           <i class="fi-rs-angle-down"></i>-->
+                     <!--       </a>-->
+                     <!--       <div class="categories-dropdown-wrap categories-dropdown-active-large font-heading">-->
+                     <!--           <div class="d-flex categori-dropdown-inner">-->
+                     <!--               <ul>-->
+                     <!--                   {% for c in categories %}-->
+
+                     <!--                   <li>-->
+                     <!--                       <a href="{% url 'core:category-product-list' c.cid %}"> <img src="{{ c.image.url }}" alt="" />{{c.title}}</a>-->
+                     <!--                   </li>-->
+                     <!--                   {% endfor %}-->
+
+                     <!--               </ul>-->
+
+                     <!--           </div>-->
+
+                     <!--           <div class="more_categories"><span class="icon"></span> <span class="heading-sm-1">Show more...</span></div>-->
+                     <!--       </div>-->
+                     <!--   </div>-->
+                    <div class="hotline d-none d-lg-flex">
+                      <img src="{% static 'assets/imgs/theme/icons/icon-headphone.svg' %}" alt="hotline" />
+                         <p>
+                            <a href="https://wa.me/254707249256" target="_blank" style="text-decoration: none; color: inherit;">
+                              +254707249256
+                            </a>
+                       <span>24/7 Support Center</span>
+                         </p>
+                    </div>
+
+                    <div class="header-action-icon-2 d-block d-lg-none">
+                        <div class="burger-icon burger-icon-white">
+                            <span class="burger-icon-top"></span>
+                            <span class="burger-icon-mid"></span>
+                            <span class="burger-icon-bottom"></span>
+                        </div>
+                    </div>
+                    <div class="header-action-right d-block d-lg-none">
+                        <div class="header-action-2">
+
+                                <div class="header-action-icon-2">
+                                <a href="{% url 'core:wishlist' %}">
+                                    <img alt="AlvoTheBoss" src="{% static 'assets/imgs/theme/icons/icon-heart.svg' %}" />
+                                    {% if request.user.is_authenticated %}
+                                    <span class="pro-count blue">{{ wishlist.count }}</span>
+                                    {% else %}
+                                    <span class="pro-count blue">0</span>
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="header-action-icon-2">
+                                <a class="mini-cart-icon" href="{% url 'core:cart' %}">
+                                    <img alt="AlvoTheBoss" src="{% static 'assets/imgs/theme/icons/icon-cart.svg' %}" />
+                                    <span class="pro-count white cart-items-count">{{ request.session.cart_data_obj|length }}</span>
+                                </a>
+                                <div class="cart-dropdown-wrap cart-dropdown-hm2">
+
+                                    <div class="shopping-cart-footer">
+                                        <div class="shopping-cart-button">
+                                                <a href="{% url 'core:cart' %}" class="outline">View cart</a>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{message.tags}}">
+                            <strong>{{ message }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <script>
+                    setTimeout (() => {
+                        Ksh: (".alert").alert("close");
+                    }, 3000)
+                </script>
+            </div>
+        </div>
+    </header>
+    <div class="mobile-header-active mobile-header-wrapper-style">
+        <div class="mobile-header-wrapper-inner">
+            <div class="mobile-header-top">
+                 <div class="logo logo-width-1" style="text-align: left;>
+    <a href="/"><img src="{% static 'assets/imgs/banner/alvin.jpg' %}" alt="AlvoTheBoss" style="height: 60px; width: auto;"/></a>
+</div>
+                <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
+                    <button class="close-style search-close">
+                        <i class="icon-top"></i>
+                        <i class="icon-bottom"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="mobile-header-content-area">
+                <div class="mobile-search search-style-3 mobile-header-border">
+
+                </div>
+                <div class="mobile-menu-wrap mobile-header-border">
+                    <!-- mobile menu start -->
+                    <nav>
+                        <ul class="mobile-menu font-heading">
+
+                            <li class="menu-item-has-children">
+                                <a href="{% url 'core:product-list'%}">shopping page</a>
+
+                            </li>
+                            <li class="menu-item-has-children">
+                                <a href="{% url 'core:vendor-list'%}">TYPES</a>
+                            </li>
+
+
+                            <li class="menu-item-has-children">
+                                <a href="#">Pages</a>
+                                <ul class="dropdown">
+                                    <li><a href="{% url 'core:about_us' %}">About Us</a></li>
+                                    <li><a href="{% url 'core:contact' %}">Contact us</a></li>
+                                    <li><a href="{% url 'userauths:profile-update' %}">My Account</a></li>
+                                    <li><a href="{% url 'userauths:sign-in' %}">Login</a></li>
+                                    <li><a href="{% url 'userauths:sign-up' %}">Register</a></li>
+                                    <li><a href="{% url 'core:purchase_guide' %}">Purchase Guide</a></li>
+                                    <li><a href="{% url 'core:privacy_policy' %}">Privacy Policy</a></li>
+                                    <li><a href="{% url 'core:terms_of_service' %}">Terms of Service</a></li>
+
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </nav>
+                    <!-- mobile menu end -->
+                </div>
+                <div class="mobile-header-info-wrap">
+                    <div class="single-mobile-header-info">
+                        <a href="{% url 'core:about_us' %}"><i class="fi-rs-marker"></i>AlvoTheBoss </a>
+                    </div>
+                    <div class="single-mobile-header-info">
+                        <a href="{% url 'userauths:sign-in' %}"><i class="fi-rs-user"></i>Log In / Sign Up </a>
+                    </div>
+                    <div class="single-mobile-header-info">
+                        <a href="#"><i class="fi-rs-headphones"></i>(+254)-707249256 </a>
+                    </div>
+                </div>
+    <div class="mobile-social-icon mb-50">
+    <h6 class="mb-15">Follow Us</h6>
+                    <a href="https://wa.me/254707249256"> <i class="fab fa-whatsapp fa-2x" style="color: white;"></i></a>
+                    <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-facebook-white.svg' %}" alt="" /></a>
+                    <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-twitter-white.svg' %}" alt="" /></a>
+                    <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-instagram-white.svg' %}" alt="" /></a>
+                    <a href="https://www.linkedin.com/in/evelyfresh-ventures-b39867328" style="color: white; font-size: 24px; transition: color 0.3s ease;">
+                     <i class="fab fa-linkedin" style="color: inherit;"></i>
+                    </a>
+
+<script>
+  // Adding hover effect using JavaScript for inline styling
+  const link = document.querySelector('a');
+
+  link.onmouseover = function() {
+    link.style.color = 'green';
+  };
+
+  link.onmouseout = function() {
+    link.style.color = 'white';
+  };
+</script>
+
+                    <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-youtube-white.svg' %}" alt="" /></a>
+    </div>
+
+
+                <div class="AlvoTheBoss">All rights are reserved</div>
+            </div>
+        </div>
+    </div>
+    <!--End header-->
+
+    {% block content %}
+
+
+
+    {% endblock content %}
+
+
+
+    <footer class="main">
+        <section class="featured section-padding">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-1-5 col-md-4 col-12 col-sm-6 mb-md-4 mb-xl-0">
+                        <div class="banner-left-icon d-flex align-items-center wow fadeIn animated">
+                            <div class="banner-icon">
+                                <img src="{% static 'assets/imgs/theme/icons/icon-1.svg' %}" alt="" />
+                            </div>
+                            <div class="banner-text">
+                                <h3 class="icon-box-title">Best prices & offers</h3>
+                                <p>Orders more and more</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
+                        <div class="banner-left-icon d-flex align-items-center wow fadeIn animated">
+                            <div class="banner-icon">
+                                <img src="{% static 'assets/imgs/theme/icons/icon-2.svg' %}" alt="" />
+                            </div>
+                            <div class="banner-text">
+                                <h3 class="icon-box-title">Free delivery</h3>
+                                <p>24/7 amazing services</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
+                        <div class="banner-left-icon d-flex align-items-center wow fadeIn animated">
+                            <div class="banner-icon">
+                                <img src="{% static 'assets/imgs/theme/icons/icon-3.svg' %}" alt="" />
+                            </div>
+                            <div class="banner-text">
+                                <h3 class="icon-box-title">Great daily deal</h3>
+                                <p>When you sign up</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
+                        <div class="banner-left-icon d-flex align-items-center wow fadeIn animated">
+                            <div class="banner-icon">
+                                <img src="{% static 'assets/imgs/theme/icons/icon-4.svg' %}" alt="" />
+                            </div>
+                            <div class="banner-text">
+                                <h3 class="icon-box-title">Wide assortment</h3>
+                                <p>Mega Discounts</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
+                        <div class="banner-left-icon d-flex align-items-center wow fadeIn animated">
+                            <div class="banner-icon">
+                                <img src="{% static 'assets/imgs/theme/icons/icon-5.svg' %}" alt="" />
+                            </div>
+                            <div class="banner-text">
+                                <h3 class="icon-box-title">Easy returns</h3>
+                                <p>Within 30 days</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-1-5 col-md-4 col-12 col-sm-6 d-xl-none">
+                        <div class="banner-left-icon d-flex align-items-center wow fadeIn animated">
+                            <div class="banner-icon">
+                                <img src="{% static 'assets/imgs/theme/icons/icon-6.svg' %}" alt="" />
+                            </div>
+                            <div class="banner-text">
+                                <h3 class="icon-box-title">Safe delivery</h3>
+                                <p>Within 30 days</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section-padding footer-mid">
+            <div class="container pt-15 pb-20">
+                <div class="row">
+                    <div class="col">
+                        <div class="widget-about font-md mb-md-3 mb-lg-3 mb-xl-0">
+                            <div class="logo mb-30">
+                                <a href="/" class="mb-15"><img src="{% static 'assets/imgs/banner/alvin.jpg' %}" /></a>
+                                <p class="font-lg text-heading" style="color:#193b7c"><strong>AlvoTheBoss</strong></p>
+                            </div>
+                            <ul class="contact-infor">
+                                <li style="color:blue">LOCATED IN NAIROBI LUNGALUNGA ROAD OPPOSITE B.A.T</li>
+                                <li><img src="{% static 'assets/imgs/theme/icons/icon-location.svg' %}" alt="" /><strong>Address: </strong> <span>PO BOX 396-001 NAIROBI</span></li>
+                                <li><img src="{% static 'assets/imgs/theme/icons/icon-contact.svg' %}" alt="" /><strong>Call Us: </strong><span>+254 707 249256</span></li>
+                                <li><img src="{% static 'assets/imgs/theme/icons/icon-email-2.svg' %}" alt="" /><strong>Email: </strong><span>alvotheboss@gmail.com</span></li>
+                                <li><img src="{% static 'assets/imgs/theme/icons/icon-clock.svg' %}" alt="" /><strong>Hours: </strong><span>06:00 - 18:00, Mon - Sun</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <div class="footer-link-widget widget-install-app col" align="center">
+                        <br />  <br />  <br />
+                        <h5 class="mb-20">Secured Payment Gateways</h5>
+                        <img class="wow fadeIn animated" src="{% static 'assets/imgs/theme/payment-method.png' %}" alt="" />
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="container pb-30" align="right">
+                <div class="col-xl-4 col-lg-6 col-md-6 text-end d-none d-md-block">
+                     <div class="mobile-social-icon mb-50">
+                       <h6 class="mb-15">Follow Us</h6>
+                       <a href="https://wa.me/254707249256"> <i class="fab fa-whatsapp fa-2x" style="color: white;"></i></a>
+                      <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-facebook-white.svg' %}" alt="" /></a>
+                      <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-twitter-white.svg' %}" alt="" /></a>
+                      <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-instagram-white.svg' %}" alt="" /></a>
+
+                      <a href="https://www.linkedin.com/in/evelyfresh-ventures-b39867328" style="color: white; font-size: 24px; transition: color 0.3s ease;">
+                      <i class="fab fa-linkedin" style="color: inherit;"></i>
+                      </a>
+
+<script>
+  // Adding hover effect using JavaScript for inline styling
+  const link = document.querySelector('a');
+
+  link.onmouseover = function() {
+    link.style.color = 'green';
+  };
+
+  link.onmouseout = function() {
+    link.style.color = 'white';
+  };
+</script>
+
+
+
+                      <a href="#"><img src="{% static 'assets/imgs/theme/icons/icon-youtube-white.svg' %}" alt="" /></a>
+                    </div>
+                </div>
+
+        </div>
+    </footer>
+    <!-- Preloader Start -->
+    <!-- <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="text-center">
+                    <img src="{% static '{% static ' %}'assets/imgs/theme/loading.gif' %}" alt="" />
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <!-- Vendor JS-->
+    <script data-cfasync="false" src="{% static '/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js' %}"></script>
+    <script src="{% static 'assets/js/vendor/modernizr-3.6.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/vendor/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/vendor/jquery-migrate-3.3.0.min.js' %}"></script>
+    <script src="{% static 'assets/js/vendor/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/slick.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/jquery.syotimer.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/wow.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/slider-range.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/perfect-scrollbar.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/magnific-popup.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/select2.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/waypoints.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/counterup.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/jquery.countdown.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/images-loaded.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/isotope.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/scrollup.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/jquery.vticker-min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/jquery.theia.sticky.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/jquery.elevatezoom.js' %}"></script>
+    <!-- Template  JS -->
+    <script src="{% static 'assets/js/main.js' %}"></script>
+    <script src="{% static 'assets/js/shop.js' %}"></script>
+    <script src="{% static 'assets/js/function.js' %}"></script>
+</body>
+
+</html>
+

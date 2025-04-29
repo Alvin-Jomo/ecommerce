@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selling Price Calculator</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(1, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.results-container {
+    flex: 1;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+form-container {
+    flex: 2;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #343a40;
+}
+
+h2 {
+    margin-bottom: 10px;
+    color: #343a40;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.result p {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #495057;
+    padding: 20px;
+}
+
+.result {
+    margin-top: 10px;
+}
+
+</style>
+</head>
+<body>
+    <div class="container">
+
+
+        <!-- Form Section -->
+        <div class="form-container">
+            <h1>Selling Price Calculator</h1>
+            <form id="priceCalculator">
+                <div class="form-group">
+                    <label for="buyingPrice">Buying Price (per kg):</label>
+                    <input type="number" id="buyingPrice" placeholder="Enter buying price per kg" required>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Total Quantity (kgs):</label>
+                    <input type="number" id="quantity" placeholder="Enter total quantity in kg" required>
+                </div>
+                <div class="form-group">
+                    <label for="waste">Waste Quantity (kgs):</label>
+                    <input type="number" id="waste" placeholder="Enter waste in kg" required>
+                </div>
+                <div class="form-group">
+                    <label for="driverCost">Driver's Fee (Ksh):</label>
+                    <input type="number" id="driverCost" placeholder="Enter driver's fee" required>
+                </div>
+                <div class="form-group">
+                    <label for="fuelCost">Fuel Cost (Ksh):</label>
+                    <input type="number" id="fuelCost" placeholder="Enter fuel cost" required>
+                </div>
+                <div class="form-group">
+                    <label for="transportCost">Market Shipping Cost (Ksh):</label>
+                    <input type="number" id="transportCost" placeholder="Enter market shipping cost" required>
+                </div>
+                <div class="form-group">
+                    <label for="commission">Salesperson Commission (%):</label>
+                    <input type="number" id="commission" placeholder="Enter commission percentage" required>
+                </div>
+                <button type="button" id="calculateButton">Calculate Selling Price</button>
+            </form>
+        </div>
+        <!-- Results Section -->
+        <div class="results-container">
+    <h2>Results:</h2>
+    <div id="result">
+        <p id="breakEvenPrice">No Profit No loss Price per kg: <span style="color:blue; font-weight: bold;">-</span></p>
+        <p id="sellingPrice">Selling Price per kg: <span style="color:blue; font-weight: bold;">-</span></p>
+        <p id="totalProfit">Total Profit: <span style="color:blue; font-weight: bold;">-</span></p>
+    </div>
+</div>
+
+
+<script>
+document.getElementById("calculateButton").addEventListener("click", function () {
+    // Get input values
+    const buyingPrice = parseFloat(document.getElementById("buyingPrice").value);
+    const quantity = parseFloat(document.getElementById("quantity").value);
+    const waste = parseFloat(document.getElementById("waste").value);
+    const driverCost = parseFloat(document.getElementById("driverCost").value);
+    const fuelCost = parseFloat(document.getElementById("fuelCost").value);
+    const transportCost = parseFloat(document.getElementById("transportCost").value);
+    const commissionPercentage = parseFloat(document.getElementById("commission").value);
+
+    if (isNaN(buyingPrice) || isNaN(quantity) || isNaN(waste) || isNaN(driverCost) || isNaN(fuelCost) || isNaN(transportCost) || isNaN(commissionPercentage)) {
+        alert("Please fill in all fields with valid numbers!");
+        return;
+    }
+
+    // Calculate total cost
+    const spoilageCost = waste * buyingPrice;
+    const totalFixedCosts = buyingPrice * quantity + driverCost + fuelCost + transportCost + spoilageCost;
+    const sellableWeight = quantity - waste;
+
+    // Calculate break-even price
+    const breakEvenPrice = totalFixedCosts / sellableWeight;
+
+    // Add 20% profit
+    const sellingPrice = breakEvenPrice * 1.2;
+
+    // Calculate total profit
+    const totalRevenue = sellingPrice * sellableWeight;
+    const salespersonCommission = (commissionPercentage / 100) * totalRevenue;
+    const totalProfit = totalRevenue - totalFixedCosts - salespersonCommission;
+
+    // Display results
+    document.getElementById("breakEvenPrice").textContent = `No Profit No loss Price per kg: Ksh ${breakEvenPrice.toFixed(2)}`;
+    document.getElementById("sellingPrice").textContent = `Selling Price per kg: Ksh ${sellingPrice.toFixed(2)}`;
+    document.getElementById("totalProfit").textContent = `Total Profit: Ksh ${totalProfit.toFixed(2)}`;
+});
+</script>
+</body>
+</html>

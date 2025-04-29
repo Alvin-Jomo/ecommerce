@@ -1,0 +1,68 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block content %}
+<br> <br> <br>    
+<main class="main pages">
+        <div class="page-content d-flex align-items-center justify-content-center" align="center" >
+            <div class="container">
+                <div class="row justify-content-center" >
+                    <div class="col-lg-8" style="border:4px solid black">
+                        <div class="purchase-guide-container border border-dark p-5 rounded bg-white" >
+                            
+                            <h1 class="mb-30" align="center">Purchase Guide</h1>
+                            <div class="mb-4">
+                                <h5 class="mb-20">01. Choose Your Product</h5>
+                                <p>Browse our catalog and select the products you wish to purchase. You can filter products by category, price, and more to find exactly what you need.</p>
+                            </div>
+                            <div class="mb-4">
+                                <h5 class="mb-20">02. Add to Cart</h5>
+                                <p>Once you've chosen a product, add it to your shopping cart. You can continue shopping or proceed to checkout at any time.</p>
+                            </div>
+                            <div class="mb-4">
+                                <h5 class="mb-20">03. Review Your Order</h5>
+                                <p>Review the items in your cart to ensure everything is correct. You can update quantities or remove items if necessary.</p>
+                            </div>
+                            <div class="mb-4">
+                                <h5 class="mb-20">04. Provide Shipping Information</h5>
+                                <p>Enter your shipping details, including address, phone number, and any special delivery instructions.</p>
+                            </div>
+                            <div class="mb-4">
+                                <h5 class="mb-20">05. Make Payment</h5>
+                                <p>Select your preferred payment method and enter the required information to complete your purchase. We accept various payment options for your convenience.</p>
+                            </div>
+                            <div class="mb-4">
+                                <h5 class="mb-20">06. Confirmation</h5>
+                                <p>After completing the payment, you will receive an order confirmation email with the details of your purchase. You can track the status of your order through our website.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <br> <br> <br> <br>
+    <style>
+        .purchase-guide-container {
+            border-radius: 15px;
+            background-color: white;
+            padding: 40px;
+            max-width: 600px;
+        }
+        .main.pages .container {
+            max-width: 100%;
+        }
+        h4.text-brand {
+            color: #5a5a5a;
+            font-weight: bold;
+        }
+        h1 {
+            color: #333;
+        }
+        h5 {
+            color: #007bff;
+        }
+        p {
+            color: #555;
+        }
+    </style>
+{% endblock content %}

@@ -1,0 +1,217 @@
+{% extends 'useradmin/base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+<style>
+/* Enlarge the card */
+.card-clickable {
+    transition: transform 0.3s ease-in-out;
+}
+
+.card-clickable.enlarge {
+    transform: scale(1.2);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+}
+
+.close {
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Highlight matched rows */
+.highlight {
+    background-color: #ffeb3b;
+}
+</style>
+
+<section class="content-main">
+    <div class="content-header">
+        <h2 style="color:brown">ALVOTHEBOSS ADMIN DASHBOARD</h2>
+        <p>Whole data about your business is located here</p>
+    </div>
+
+    <!-- Manager Performance Summary Cards -->
+    <div class="row" id="manager-summary-cards" style="display: none;">
+        <div class="col-lg-3">
+            <div class="card card-body mb-4">
+                <article class="icontext">
+                    <div class="text">
+                        <h6 class="mb-1 card-title"><strong>Total Revenue</strong></h6>
+                        <span id="manager-total-revenue">Ksh: 0.00</span>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+    <div class="card card-body mb-4">
+        <article class="icontext">
+            <div class="text">
+                <h6 class="mb-1 card-title">2% Commission</h6>
+                <span id="manager-commission">Ksh: 0.00</span>
+            </div>
+        </article>
+    </div>
+</div>
+
+
+
+        <div class="col-lg-3">
+            <div class="card card-body mb-4">
+                <article class="icontext">
+                    <div class="text">
+                        <h6 class="mb-1 card-title">Total Orders</h6>
+                        <span id="manager-total-orders">0</span>
+                    </div>
+                </article>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="card card-body mb-4">
+                <article class="icontext">
+                    <div class="text">
+                        <h6 class="mb-1 card-title">Unique Customers</h6>
+                        <span id="manager-unique-customers">0</span>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card mb-4">
+        <header class="card-header">
+            <h4 class="card-title">Latest orders</h4>
+        </header>
+        <div class="card-body">
+            <input type="text" id="searchInput" placeholder="Search by Manager or Date..." class="form-control mb-3">
+            <div class="table-responsive">
+                <table class="table align-middle table-nowrap mb-0" id="ordersTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Order ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Manager</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">Phone</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Payment Status</th>
+                            <th scope="col">Amount Already Paid</th>
+                            <th scope="col">View Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for l in latest_orders %}
+                        <tr class="order-row">
+                            <td><a href="#" class="fw-bold">#{{ l.oid }}</a></td>
+                            <td>{{ l.full_name|title }}</td>
+                            <td>{{ l.email }}</td>
+                            <td class="manager-name">{{ l.manager }}</td>
+                            <td>{{ l.location }}</td>
+                            <td>{{ l.phone }}</td>
+                            <td class="order-date">{{ l.order_date }}</td>
+                            <td class="order-total">Ksh: {{ l.price }}</td>
+                            <td>
+                                {% if l.paid_status %}
+                                <span class="badge badge-pill badge-soft-success">Paid</span>
+                                {% else %}
+                                <span class="badge badge-pill badge-soft-danger">Not Paid</span>
+                                {% endif %}
+                            </td>
+                            <td class="already-paid-cell" style="cursor: pointer;">
+                                Ksh: {{ l.amount_already_paid|default:"0.00" }}
+                            </td>
+                            <td><a href="{% url 'useradmin:order_detail' l.id %}" class="btn btn-xs">View details</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal for Input Form -->
+<div id="amountModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h4>Enter Amount Already Paid</h4>
+        <form id="paidAmountForm">
+            <div class="form-group">
+                <label for="paidAmount">Amount Paid:</label>
+                <input type="number" id="paidAmount" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Search Functionality
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    const filter = this.value.toLowerCase().split(' ');
+    const rows = document.querySelectorAll('#ordersTable tbody tr');
+
+    rows.forEach(row => {
+        const manager = row.querySelector('.manager-name').textContent.toLowerCase();
+        const date = row.querySelector('.order-date').textContent.toLowerCase();
+
+        const matches = filter.every(keyword => manager.includes(keyword) || date.includes(keyword));
+        row.style.display = matches ? '' : 'none';
+    });
+});
+
+// Show Manager Performance
+document.querySelectorAll('.order-row').forEach(row => {
+    row.addEventListener('click', function() {
+        const managerName = this.querySelector('.manager-name').innerText.trim();
+        let totalOrders = 0;
+        let totalRevenue = 0;
+        let uniqueCustomers = new Set();
+
+        document.querySelectorAll('.order-row').forEach(orderRow => {
+            const rowManager = orderRow.querySelector('.manager-name').innerText.trim();
+            const customerName = orderRow.cells[1].innerText.trim();
+            const orderTotal = parseFloat(orderRow.querySelector('.order-total').innerText.replace('Ksh:', '').replace(',', ''));
+
+            if (rowManager === managerName) {
+                totalOrders += 1;
+                totalRevenue += orderTotal;
+                uniqueCustomers.add(customerName);
+            }
+        });
+ const commission = totalRevenue * 0.02;
+        document.getElementById('manager-summary-cards').style.display = 'flex';
+        document.getElementById('manager-total-revenue').innerText = `Ksh: ${totalRevenue.toLocaleString()}`;
+        document.getElementById('manager-total-orders').innerText = totalOrders;
+        document.getElementById('manager-unique-customers').innerText = uniqueCustomers.size;
+        document.getElementById('manager-commission').innerText = `Ksh: ${commission.toLocaleString()}`;
+
+    });
+});
+</script>
+
+{% endblock %}

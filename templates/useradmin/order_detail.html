@@ -1,0 +1,274 @@
+{% extends 'useradmin/base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<style>
+    .invoice-table {
+        border: 2px solid black;
+        border-collapse: collapse;
+        width: 100%;
+    }
+    .invoice-table th, .invoice-table td {
+        border: 1px solid black;
+        padding: 10px;
+    }
+    .invoice-table th {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Order detail</h2>
+            <p>Details for Order ID: {{ order.oid }}</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <header class="card-header">
+            <div class="row align-items-center">
+                <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
+                    <span><i class="material-icons md-calendar_today"></i> <b>{{ order.date }}</b></span><br/>
+                    <small class="text-muted">Order ID: #{{ order.oid }}</small>
+                </div>
+                <form method="POST" action="{% url 'useradmin:change_order_status' order.oid %}" class="col-lg-6 col-md-6 ms-auto text-md-end">
+                    {% csrf_token %}
+                    <select name="status" class="form-select d-inline-block mb-lg-0 mr-5 mw-200">
+                        <option value="pending">Change Order Status</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                    </select>
+                    <button class="btn btn-primary" type="submit">Save</button>
+                </form>
+            </div>
+        </header>
+
+   <div class="card-body">
+    <div class="table-responsive">
+        <table class="table invoice-table" id="invoiceTable">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>U.O.M</th>
+                    <th>Size</th>
+                    <th>Unit Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in order_items %}
+                <tr>
+                    <td contenteditable="true">{{ o.item }}</td>
+                    <td><input type="text" value="{{ o.uom }}" placeholder="Enter U.O.M" /></td>
+                    <td><input type="text" value="{{ o.size }}" /></td>
+                    <td><input type="number" value="{{ o.price }}" min="1" onchange="updateTotal(this)" /></td>
+                    <td><input type="number" value="{{ o.qty }}" min="1" onchange="updateTotal(this)" /></td>
+                    <td>Ksh: <span>0.00</span></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Delete</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button class="btn btn-secondary mt-3" onclick="addRow()">Add Row</button>
+    </div>
+
+    <div class="text-end mt-3">
+        <span><b>Grand Total: </b>Ksh: <span id="grandTotal">0.00</span></span>
+        <button class="btn btn-primary" id="generateInvoiceButton" onclick="generateInvoice()">Generate Invoice</button>
+    </div>
+</div>
+
+
+            <script>
+document.addEventListener("DOMContentLoaded", function () {
+    initializeTotals(); // Initialize totals on page load
+    updateGrandTotal(); // Update grand total on page load
+});
+
+function initializeTotals() {
+    var table = document.getElementById('invoiceTable').getElementsByTagName('tbody')[0];
+    var rows = table.rows;
+
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var unitPrice = parseFloat(row.cells[3].getElementsByTagName('input')[0].value) || 0;
+        var quantity = parseFloat(row.cells[4].getElementsByTagName('input')[0].value) || 0;
+        var total = unitPrice * quantity;
+
+        // Set the default total for each row
+        row.cells[5].getElementsByTagName('span')[0].textContent = total.toFixed(2);
+    }
+}
+
+function updateTotal(input) {
+    var row = input.closest('tr'); // Find the row of the changed input
+    var unitPrice = parseFloat(row.cells[3].getElementsByTagName('input')[0].value) || 0;
+    var quantity = parseFloat(row.cells[4].getElementsByTagName('input')[0].value) || 0;
+    var total = unitPrice * quantity;
+
+    // Update the total cell in the row
+    row.cells[5].getElementsByTagName('span')[0].textContent = total.toFixed(2);
+
+    // Update the grand total
+    updateGrandTotal();
+}
+
+function updateGrandTotal() {
+    var table = document.getElementById('invoiceTable').getElementsByTagName('tbody')[0];
+    var rows = table.rows;
+    var grandTotal = 0;
+
+    // Loop through rows to calculate the grand total
+    for (var i = 0; i < rows.length; i++) {
+        var total = parseFloat(rows[i].cells[5].getElementsByTagName('span')[0].textContent) || 0;
+        grandTotal += total;
+    }
+
+    // Update the grand total display
+    document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
+}
+
+function addRow() {
+    var table = document.getElementById('invoiceTable').getElementsByTagName('tbody')[0];
+    var newRow = table.insertRow();
+
+    newRow.innerHTML = `
+        <td contenteditable="true">New Product</td>
+        <td><input type="text" placeholder="Enter U.O.M" /></td>
+        <td><input type="text" placeholder="Enter Size" /></td>
+        <td><input type="number" min="1" value="0" onchange="updateTotal(this)" /></td>
+        <td><input type="number" min="1" value="0" onchange="updateTotal(this)" /></td>
+        <td class="text-end">Ksh: <span>0.00</span></td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Delete</button></td>
+    `;
+
+    // Update the grand total in case the new row affects it
+    updateGrandTotal();
+}
+
+function deleteRow(button) {
+    var row = button.closest('tr'); // Find the row to delete
+    row.parentNode.removeChild(row); // Remove the row
+    updateGrandTotal(); // Update the grand total after deletion
+}
+
+
+                function generateInvoice() {
+    var tableRows = '';
+    var grandTotal = 0;
+    var rows = document.getElementById('invoiceTable').rows;
+
+    for (var i = 1; i < rows.length; i++) {
+        var product = rows[i].cells[0].textContent;
+        var uom = rows[i].cells[1].getElementsByTagName('input')[0].value;
+        var size = rows[i].cells[2].getElementsByTagName('input')[0].value;
+        var unitPrice = rows[i].cells[3].getElementsByTagName('input')[0].value;
+        var quantity = rows[i].cells[4].getElementsByTagName('input')[0].value;
+        var total = parseFloat(rows[i].cells[5].getElementsByTagName('span')[0].textContent) || 0;
+        grandTotal += total;
+
+        tableRows += `
+            <tr>
+                <td style="font-size: 12px;">${product}</td>
+                <td style="font-size: 12px;">${uom}</td>
+                <td style="font-size: 12px;">${size}</td>
+                <td style="font-size: 12px;">${quantity}</td>
+                <td style="font-size: 12px;">Ksh: ${parseFloat(unitPrice).toFixed(2)}</td>
+                <td class="text-right" style="font-size: 12px;">Ksh: ${total.toFixed(2)}</td>
+            </tr>
+        `;
+    }
+
+    var invoiceContent = `
+        <html>
+        <head>
+            <title>Invoice</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 18px; }
+                .invoice-header { text-align: center; }
+                .invoice-header h1 { font-size: 20px; color: #444; }
+                .invoice-header h2 { font-size: 15px; }
+                .invoice-header p { margin: 0; }
+                table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                table, th, td { border: 1px solid black; padding: 4px; font-size: 8px; }
+                th { background-color: #f2f2f2; font-size: 13px; }
+                .text-right { text-align: right; font-size: 15px; }
+                .no-border { border: none; }
+                .framed-section { border: 1px solid #000; padding: 8px; margin-bottom: 8px; font-size: 15px; }
+                .bold { font-weight: bold; }
+                @media print {
+                    #printButton, #downloadButton { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="invoice-header">
+                <img src="{% static 'assets/imgs/banner/log.jpg' %}" alt="Logo" style="height: 100px; width: 150px;">
+                <h1>EVELYFRESH VENTURES LTD</h1>
+                <p><strong>Contact Us:</strong><br><span style="color: blue">+254769415419</span> or <span style="color: blue">everfreshfruits1@gmail.com</span></p>
+                <h2>Invoice</h2>
+            </div>
+
+            <p><strong class="bold">Order ID:</strong> {{ order.oid }}</p>
+
+            <table style="width: 100%;">
+                <tr>
+                    <td>
+                        <div class="framed-section">
+                            <p><strong class="bold">INVOICE TO:</strong><br><b>Name:</b> <span style="color:brown">{{ order.full_name }}</span><br><b>Email:</b> <span style="color:brown">{{ order.email }}</span><br><b>Phone:</b> <span style="color:brown">{{ order.phone }}</span><br><b>Date:</b> <span style="color:brown">{{ order.date }}</span></p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="framed-section">
+                            <p><strong class="bold">DELIVERY DETAILS:</strong><br>Address: <span style="color:brown">{{ order.address }}</span><br>City: <span style="color:brown">{{ order.city }}</span><br>State: <span style="color:brown">{{ order.state }}</span><br>Country: <span style="color:brown">{{ order.country }}</span></p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>U.O.M</th>
+                         <th>Size</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                    <tr>
+                        <td colspan="5" class="text-right"><strong>Grand Total:</strong></td>
+                        <td class="text-right">Ksh: <strong>${grandTotal.toFixed(2)}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="framed-section"><strong>Payment Method:</strong><br>MPESA PAYBILL NO. <span style="color:brown">516600</span><br>ACCOUNT NO. <span style="color:brown">840074</span></p>
+            <p><strong>Customer Signature:</strong> _______________________________</p>
+            <p><strong>Payment Status:</strong> {% if order.paid_status == True %}<span style="color: blue">Paid</span>{% else %}<span style="color:red">Not Paid</span>{% endif %}</p>
+
+            <div class="text-right mt-3">
+                <button id="printButton" onclick="window.print()">Print Invoice</button>
+                <button id="downloadButton" onclick="downloadInvoice()">Download Invoice</button>
+            </div>
+        </body>
+        </html>
+    `;
+
+    var invoiceWindow = window.open('', 'Invoice', 'width=800,height=600');
+    invoiceWindow.document.write(invoiceContent);
+    invoiceWindow.document.close();
+}
+
+            </script>
+        </div>
+    </div>
+</section>
+{% endblock %}

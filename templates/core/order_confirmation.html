@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Confirmation - INV-{{ order.id }}</title>
+</head>
+<body>
+    <h2>Hello, {{ user.first_name }}!</h2>
+    <p>Thank you for your order! Below are your order details:</p>
+
+    <h3>Order #INV-{{ order.id }}</h3>
+    <table border="1" cellpadding="10" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td>{{ item.item }}</td>
+                <td>Ksh: {{ item.price }}</td>
+                <td>{{ item.qty }}</td>
+                <td>Ksh: {{ item.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Display the total sum -->
+    <p><strong>Total: Ksh {{ total_sum }}</strong></p>
+
+    <p>If you have any questions, feel free to contact us.</p>
+    <p>Best regards,<br>Your Company</p>
+</body>
+</html>

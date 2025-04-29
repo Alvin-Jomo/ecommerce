@@ -1,0 +1,291 @@
+  {% extends 'partials/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    /* Table container styling */
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Table overall styling */
+table.table-wishlist {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    text-align: left;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Table header styling */
+table.table-wishlist thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #ddd;
+}
+
+table.table-wishlist thead th {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    padding: 12px;
+    text-align: center;
+}
+
+/* Table body styling */
+table.table-wishlist tbody tr {
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s;
+}
+
+table.table-wishlist tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+table.table-wishlist tbody td {
+    padding: 15px;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Image styling */
+table.table-wishlist tbody td.image img {
+    max-width: 60px;
+    border-radius: 5px;
+    transition: transform 0.2s ease-in-out;
+}
+
+table.table-wishlist tbody td.image img:hover {
+    transform: scale(1.1);
+}
+
+/* Input field styling */
+table.table-wishlist input[type="number"] {
+    width: 120px;
+    height: 35px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Select box styling */
+table.table-wishlist select.form-control {
+    width: 100px;
+    height: 35px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 2px 5px;
+    background-color: #f9f9f9;
+}
+
+/* Button/icon styling */
+table.table-wishlist a {
+    color: #333;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+table.table-wishlist a:hover {
+    color: #007bff;
+}
+
+table.table-wishlist .fi-rs-trash,
+table.table-wishlist .fi-rs-refresh {
+    cursor: pointer;
+}
+
+/* Subtotal and price text */
+table.table-wishlist .price h4 {
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Add responsive behavior */
+@media (max-width: 768px) {
+    table.table-wishlist tbody td {
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    table.table-wishlist thead th {
+        font-size: 12px;
+    }
+
+    table.table-wishlist input[type="number"],
+    table.table-wishlist select.form-control {
+        width: 50px;
+        height: 30px;
+        font-size: 12px;
+    }
+
+    table.table-wishlist .image img {
+        max-width: 40px;
+    }
+}
+
+</style>
+<main class="main" id="cart-list">
+    <!-- Breadcrumb -->
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/" rel="nofollow"><i class="fi-rs-home mr-5"></i>Home</a>
+                <span></span> Shop <span></span> Cart
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Page Content -->
+    <div class="container mb-80 mt-50">
+        <div class="row">
+            <div class="col-lg-8 mb-40">
+                <h1 class="heading-2 mb-10">Your Cart</h1>
+                <h6 class="text-body">There are <span class="text-brand">{{ totalcartitems }}</span> products in your cart</h6>
+            </div>
+        </div>
+
+        <!-- Cart Form -->
+        <div class="form-frame" style="border: 2px solid #ddd; padding: 20px; border-radius: 8px;">
+            <form action="{% url 'core:save_checkout_info' %}" method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Cart Table -->
+                        <div class="table-responsive shopping-summery">
+                            <table class="table table-wishlist">
+                                <thead>
+                                    <tr class="main-heading">
+                                        <th>Product</th>
+                                        <th>Title</th>
+                                        <th class="text-center">Unit Price</th>
+                                        <th class="text-center">Quantity</th>
+                                        <th>Size</th>
+                                        <th>Subtotal</th>
+                                        <th class="text-center">Refresh</th>
+                                        <th class="text-center">Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product_id, item in cart_data.items %}
+                                    <tr>
+                                        <td class="image product-thumbnail"><img src="{{ item.image }}" alt="#"></td>
+                                        <td class="product-des product-name">
+                                            <h6>
+                                                <a class="text-heading" href="{% url 'core:product-detail' item.pid %}">{{ item.title }}</a>
+                                            </h6>
+                                        </td>
+                                        <td class="price">Ksh: {{ item.price|floatformat:2 }}</td>
+                                        <td class="text-center">
+                                            <input type="number" step="0.1" class="form-control product-qty-{{ product_id }}" value="{{ item.qty|floatformat:1 }}">
+                                        </td>
+                                        <td>
+                                            <select name="size-{{ product_id }}" class="form-control size-selector-{{ product_id }}">
+                                                <option value="Small" {% if item.size == "Small" %}selected{% endif %}>Small</option>
+                                                <option value="Medium" {% if item.size == "Medium" %}selected{% endif %}>Medium</option>
+                                                <option value="Large" {% if item.size == "Large" %}selected{% endif %}>Large</option>
+                                                <option value="Extra-Large" {% if item.size == "Extra-Large" %}selected{% endif %}>Extra-Large</option>
+                                            </select>
+                                        </td>
+
+                                        <td>Ksh: {{ item.subtotal|floatformat:1 }}</td>
+
+                                        <td class="text-center">
+                                            <a class="update-product" data-product="{{ product_id }}"><i class="fi-rs-refresh"></i></a>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <a class="delete-product" data-product="{{ product_id }}"><i class="fi-rs-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- User Information -->
+                        <h4 class="mb-30">Bio Data</h4>
+                        <div class="row">
+                            <div class="form-group col-lg-12">
+                                <label>Full Name</label>
+                                <input type="text" name="full_name" class="form-control" value="{{ request.user.username|title }}" required>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>Email</label>
+                                <input type="email" name="email" class="form-control" value="{{ request.user.email }}" required>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>Mobile</label>
+                                <input type="text" name="mobile" class="form-control" value="{{ request.user.profile.phone }}" required>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>Manager Assigned</label>
+                                <input type="text" name="manager" class="form-control" value="{{ request.user.profile.manager }}" required>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>Location</label>
+                                <input type="text" name="location" class="form-control" value="{{ request.user.profile.location }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Shipping Information -->
+                        <h4 class="mb-30">Shipping Details</h4>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label>Address</label>
+                                <input type="text" name="address" class="form-control" value="{{ request.user.profile.location }}">
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>City</label>
+                                <input type="text" name="city" class="form-control" value="Nairobi">
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>State</label>
+                                <input type="text" name="state" class="form-control" value="{{ request.user.profile.location }}">
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>Country</label>
+                                <input type="text" name="country" class="form-control" value="Kenya">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cart Totals -->
+                    <div class="col-lg-4">
+                        <div class="border p-md-4 cart-totals">
+                            <div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <p class="fw-bold">Tax</p>
+                                    <p>Ksh: 0</p>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <p class="fw-bold">Shipping</p>
+                                    <p>Ksh: 0</p>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <p class="fw-bold">Discount</p>
+                                    <p>Ksh: 0</p>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <p class="fw-bold">Total</p>
+                                    <p>Ksh: {{ cart_total_amount }}</p>
+                                </div>
+                            </div>
+                            {% if totalcartitems %}
+                            <button type="submit" class="btn btn-primary w-100">Proceed To Checkout</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+{% endblock content %}

@@ -1,0 +1,103 @@
+{% extends 'useradmin/base.html' %}
+{% load humanize %}
+{% block content %}
+<section class="content-main">
+    <div class="content-header mb-4">
+        <h2 class="text-primary">Expenditure Dashboard</h2>
+        <p class="text-muted">Manage company expenditures and track remaining balance.</p>
+    </div>
+
+    <!-- Money in Bank Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card card-body text-white {% if danger_zone %}bg-danger{% else %}bg-success{% endif %}">
+                <h5>Money in the Bank</h5>
+                <p>Money in Bank: {{ money_in_bank }}</p>
+                <p>Remaining Balance: {{ remaining_balance }}</p>
+                <p><strong>{% if danger_zone %}Danger Zone!{% else %}Healthy Balance{% endif %}</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Totals by Category -->
+    <div class="row">
+        {% for category, total in totals_by_category.items %}
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-secondary">{{ category }}</h6>
+                    <p class="mb-0"><strong>Total Spent:</strong> Ksh {{ total|intcomma }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Expenditures Table -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5>Expenditure Records</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+             <tbody>
+    {% for expenditure in expenditures %}
+    <tr>
+        <td>{{ expenditure.category }}</td>
+        <td>Ksh {{ expenditure.amount|intcomma }}</td>
+        <td>{{ expenditure.date }}</td>
+        <td>
+            <!-- Delete Button -->
+            <form method="post" action="{% url 'useradmin:delete_expenditure' expenditure.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+        </td>
+        <td>
+    <a href="{% url 'useradmin:update_expenditure' expenditure.id %}" class="btn btn-warning btn-sm">Edit</a>
+      </td>
+
+    </tr>
+    {% endfor %}
+</tbody>
+
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Expenditure Form -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+            <h5>Add Expenditure</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'useradmin:add_expenditure' %}" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category:</label>
+                    <select name="category" id="category" class="form-select" required>
+                        <option value="" disabled selected>Select a category</option>
+                        {% for key, value in expenditures.model.CATEGORY_CHOICES %}
+                        <option value="{{ key }}">{{ value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="amount" class="form-label">Amount (Ksh):</label>
+                    <input type="number" name="amount" id="amount" class="form-control" step="0.01" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add Expenditure</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,215 @@
+0{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Template Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .invoice-header img {
+            max-height: 100px; /* Adjusted height for clarity */
+        }
+
+        .invoice-header .company-name {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .invoice-header h1 {
+            font-size: 24px;
+        }
+
+        .invoice-date {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .add-row-btn, .print-btn, .back-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .add-row-btn {
+            background-color: #28a745;
+        }
+
+        .print-btn {
+            background-color: #007bff;
+        }
+
+        .back-btn {
+            background-color: #ff6347;
+        }
+
+        .total-container {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .total-container h3 {
+            font-size: 20px;
+        }
+
+        .excluding-section {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .excluding-section input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            color: brown;
+        }
+
+        @media print {
+            .add-row-btn, .print-btn, .back-btn {
+                display: none; /* Hide buttons when printing */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="invoice-container">
+    <div class="invoice-header">
+        <div>
+            <img src="{% static 'assets/imgs/banner/alvin.jpg' %}" alt="Evely Fresh Logo" id="logo" />
+            <div class="company-name">ALVOTHEBOSS</div>
+        </div>
+        <div class="invoice-date">
+            <p>Date: <span id="currentDate"></span></p>
+        </div>
+    </div>
+
+    <table id="invoiceTable">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" placeholder="Item Name"></td>
+                <td><input type="number" value="1" min="1" class="quantity"></td>
+                <td><input type="number" value="0" step="0.01" class="price"></td>
+                <td><span class="item-total">0.00</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button class="add-row-btn" onclick="addRow()">Add Row</button>
+
+    <div class="total-container">
+        <h3>Total: Ksh: <span id="grandTotal">0.00</span></h3>
+    </div>
+
+    <!-- Excluding section -->
+    <!--<div class="excluding-section">-->
+    <!--    <label for="excluding">Excluding (Items not included in the total):</label>-->
+    <!--    <input type="text" id="excluding" placeholder="Enter items not included in the price">-->
+    <!--</div>-->
+<div class="excluding-section">
+ <label for="excluding">Manager's name</label>
+ <span style="color:brown"><input type="text" id="excluding" placeholder="manager's name"></span>
+</div>
+    <button class="print-btn" onclick="window.print()">Print Invoice</button>
+    <button class="back-btn" onclick="history.back()">Go Back</button> <!-- Go Back Button -->
+</div>
+
+<script>
+    // Set current date
+    document.getElementById("currentDate").textContent = new Date().toLocaleDateString();
+
+    // Function to calculate total dynamically
+    function calculateTotal() {
+        let grandTotal = 0;
+        document.querySelectorAll("#invoiceTable tbody tr").forEach(row => {
+            const quantity = row.querySelector(".quantity").value;
+            const price = row.querySelector(".price").value;
+            const itemTotal = (quantity * price).toFixed(2);
+            row.querySelector(".item-total").textContent = itemTotal;
+            grandTotal += parseFloat(itemTotal);
+        });
+        document.getElementById("grandTotal").textContent = grandTotal.toFixed(2);
+    }
+
+    // Add event listeners for quantity and price inputs
+    document.querySelectorAll(".quantity, .price").forEach(input => {
+        input.addEventListener("input", calculateTotal);
+    });
+
+    // Function to add a new row
+    function addRow() {
+        const table = document.getElementById("invoiceTable").querySelector("tbody");
+        const newRow = document.createElement("tr");
+
+        newRow.innerHTML = `
+            <td><input type="text" placeholder="Item Name"></td>
+            <td><input type="number" value="1" min="1" class="quantity"></td>
+            <td><input type="number" value="0" step="0.01" class="price"></td>
+            <td><span class="item-total">0.00</span></td>
+        `;
+
+        table.appendChild(newRow);
+
+        // Add event listeners for the new row's inputs
+        newRow.querySelector(".quantity").addEventListener("input", calculateTotal);
+        newRow.querySelector(".price").addEventListener("input", calculateTotal);
+    }
+</script>
+
+</body>
+</html>
+
+

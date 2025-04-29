@@ -1,0 +1,191 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Printable Table</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f9;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+    }
+    input {
+      width: calc(100% - 20px);
+      padding: 8px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: white;
+      }
+      #formSection, #printButton {
+        display: none; /* Hide form and print button */
+      }
+      table {
+        border: 2px solid #000;
+      }
+      th {
+        background-color: #004085;
+        color: #fff;
+        font-size: 16px;
+      }
+      td {
+        font-size: 14px;
+      }
+      .invoice-header img {
+        width: 150px;
+        height: auto;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="invoice-header">
+      <img src="{% static 'assets/imgs/banner/alvin.jpg' %}" alt="Logo" style="height: 100px; width: 150px;" align="center">
+      <h1>ALVOTHEBOSS</h1>
+      <p><strong>Contact Us:</strong><br>
+        <span style="color: brown">0707249256</span> or
+        <span style="color: brown">alvotheboss@gmail.com</span>
+        <br />
+        <span style="color: blue">Website: </span><span style="color: brown"><u>www.evelyfreshventures.com</u></span>
+      </p>
+      <h2>Transport Charges Table</h2>
+    </div>
+
+    <!-- Form Section -->
+    <div id="formSection">
+      <h3>Generate Transport Cost Table</h3>
+      <label for="minDistance">Minimum Distance (km):</label>
+      <input type="number" id="minDistance" placeholder="Enter minimum distance" />
+
+      <label for="maxDistance">Maximum Distance (km):</label>
+      <input type="number" id="maxDistance" placeholder="Enter maximum distance" />
+
+      <label for="minOrderValue">Minimum Order Value (KES):</label>
+      <input type="number" id="minOrderValue" placeholder="Enter minimum order value" />
+
+      <label for="maxOrderValue">Maximum Order Value (KES):</label>
+      <input type="number" id="maxOrderValue" placeholder="Enter maximum order value" />
+
+      <label for="minTransport">Minimum Transport Cost (KES):</label>
+      <input type="number" id="minTransport" placeholder="Enter minimum transport cost" />
+
+      <label for="maxTransport">Maximum Transport Cost (KES):</label>
+      <input type="number" id="maxTransport" placeholder="Enter maximum transport cost" />
+
+      <button onclick="generateTable()">Generate Table</button>
+    </div>
+
+    <!-- Table Section -->
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th>Distance (km)</th>
+          <th>Order Value (KES)</th>
+          <th>Transport Cost (KES)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- Print Button -->
+    <button id="printButton" onclick="window.print()">Print Table</button>
+  </div>
+
+  <script>
+    function generateTable() {
+      const minDistance = parseFloat(document.getElementById("minDistance").value);
+      const maxDistance = parseFloat(document.getElementById("maxDistance").value);
+      const minOrderValue = parseFloat(document.getElementById("minOrderValue").value);
+      const maxOrderValue = parseFloat(document.getElementById("maxOrderValue").value);
+      const minTransport = parseFloat(document.getElementById("minTransport").value);
+      const maxTransport = parseFloat(document.getElementById("maxTransport").value);
+
+      const tableBody = document.querySelector("#resultTable tbody");
+      tableBody.innerHTML = "";
+
+      if (
+        isNaN(minDistance) || isNaN(maxDistance) ||
+        isNaN(minOrderValue) || isNaN(maxOrderValue) ||
+        isNaN(minTransport) || isNaN(maxTransport)
+      ) {
+        alert("Please fill in all fields correctly.");
+        return;
+      }
+
+      const distances = [minDistance, (minDistance + maxDistance) / 2, maxDistance];
+      const orderValues = [minOrderValue, (minOrderValue + maxOrderValue) / 2, maxOrderValue];
+
+      distances.forEach((distance) => {
+        orderValues.forEach((orderValue) => {
+          const distanceFactor = (distance - minDistance) / (maxDistance - minDistance);
+          const orderValueFactor = (orderValue - minOrderValue) / (maxOrderValue - minOrderValue);
+          let transportCost = minTransport + (distanceFactor * (maxTransport - minTransport)) - (orderValueFactor * (maxTransport - minTransport));
+
+          // Ensure transport cost stays within min and max transport cost limits
+          transportCost = Math.max(minTransport, Math.min(transportCost, maxTransport));
+
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${distance.toFixed(2)}</td>
+            <td>${orderValue.toFixed(2)}</td>
+            <td>${transportCost.toFixed(2)}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

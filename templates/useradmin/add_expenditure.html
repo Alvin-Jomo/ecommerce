@@ -1,0 +1,55 @@
+{% extends 'useradmin/base.html' %}
+                <div class="mb-3">
+                    <label for="date" class="form-label">Date</label>
+                    <input type="date" name="date" id="date" class="form-control" value="{{ current_date }}">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Record Expenditure</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Expenditure Table -->
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <h3>Expenditure Records</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Amount (Ksh)</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in expenditure_records %}
+                    <tr>
+                        <td>{{ record.category|capfirst }}</td>
+                        <td>{{ record.amount|floatformat:2|intcomma }}</td>
+                        <td><input type="date" value="{{ record.date|date:'Y-m-d' }}" class="form-control" disabled></td>
+                        <td>
+                            <a href="{% url 'useradmin:delete_expenditure' record.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Highlight danger zone card
+        const remainingMoneyCard = document.getElementById('remaining-money-card');
+        const remainingMoney = {{ remaining_money }};
+        const dangerThreshold = {{ money_in_bank * 0.2 }};
+
+        if (remainingMoney < dangerThreshold) {
+            remainingMoneyCard.classList.add('danger-zone');
+        }
+    });
+</script>
+
+{% endblock %}

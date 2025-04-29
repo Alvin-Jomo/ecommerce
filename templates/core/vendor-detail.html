@@ -1,0 +1,172 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block content %}
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="{% url 'core:product-list' %}" rel="nofollow">
+                    <i class="fi-rs-home mr-5"></i>Home
+                </a>
+                <span></span>AlvoTheBoss<span></span> Products
+            </div>
+        </div>
+    </div>
+    <div class="container mb-30">
+        <div class="archive-header-3 mt-30 mb-80" style="background-color: #f8f8f8; padding: 20px; border-radius: 10px;">
+            <div class="text-center">
+                <h1 style="color: #4CAF50; font-weight: bold; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px;">
+                    {{ vendor.title }}
+                </h1>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mb-4 text-center">
+            <input
+                type="text"
+                id="search-bar"
+                class="form-control"
+                placeholder="Search products..."
+                style="width: 50%; margin: 0 auto; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 5px;">
+        </div>
+
+        <section class="product-section section-padding position-relative">
+            <div class="section-title style-2">
+                <h3>AlvoTheBoss Products</h3>
+            </div>
+            <p>Total Products: {{ products|length }}</p>
+            {% if products %}
+            <div class="row product-grid-4" id="product-container">
+                {% for p in products %}
+                <div class="col-lg-3 col-md-4 col-6 product-item" data-title="{{ p.title|lower }}">
+                    <div class="product-cart-wrap mb-30">
+                        <div class="product-img-action-wrap">
+                            <div class="product-img product-img-zoom">
+                                <a href="{% url 'core:product-detail' p.pid %}">
+                                    <img
+                                        class="default-img"
+                                        src="{{ p.image.url }}"
+                                        alt="{{ p.title }}"
+                                        style="height: 280px; width: 280px; object-fit: cover;" />
+                                    <img
+                                        class="hover-img"
+                                        src="{{ p.image.url }}"
+                                        alt="{{ p.title }}"
+                                        style="height: 280px; width: 280px; object-fit: cover;" />
+                                </a>
+                            </div>
+                            <div class="product-action-1">
+                                <a
+                                    aria-label="Add To Wishlist"
+                                    class="action-btn add-to-wishlist"
+                                    data-product-item="{{ p.id }}">
+                                    <i class="fi-rs-heart"></i>
+                                </a>
+                                <a
+                                    href="{% url 'core:product-detail' p.pid %}"
+                                    class="action-btn">
+                                    <i class="fi-rs-eye"></i>
+                                </a>
+                            </div>
+                            <div class="product-badges product-badges-position product-badges-mrg">
+                                <span class="hot">AlvoTheBoss product</span>
+                            </div>
+                        </div>
+                        <div class="product-content-wrap">
+                            <div class="product-category">
+                                <a href="shop-grid-right.html">{{ p.category.title }}</a>
+                            </div>
+                            <h2>
+                                <a href="{% url 'core:product-detail' p.pid %}">{{ p.title }}</a>
+                            </h2>
+                            <div class="product-rate-cover">
+                                <i class="fas fa-star text-warning"></i>
+                                <span class="font-small ml-5 text-muted">({{ p.reviews.all.count }})</span>
+                            </div>
+                            <div>
+                                <span class="font-small text-muted">
+                                    By <a href="">{{ p.vendor.title }}</a>
+                                </span>
+                            </div>
+                            <div class="product-card-bottom">
+                                <div class="product-price">
+                                    <span>Ksh: </span>
+                                    <span class="current-product-price-{{ p.id }}">{{ p.price }}</span>
+                                    {% if p.old_price %}
+                                    <span class="old-price">Ksh: {{ p.old_price }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="add-cart">
+                                    <button
+                                        class="add add-to-cart-btn"
+                                        data-index="{{ p.id }}"
+                                        style="border: none; background-color: green; color: white; padding: 8px 12px; border-radius: 5px;">
+                                        <i class="fi-rs-shopping-cart mr-5"></i>Add
+                                    </button>
+                                    <button
+                                        style="border: none; background: none;"
+                                        class="add-to-wishlist"
+                                        data-product-item="{{ p.id }}">
+                                        <i class="fi-rs-heart text-danger"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>No products available</p>
+            {% endif %}
+        </section>
+    </div>
+</main>
+
+<script>
+    // Search functionality
+    document.getElementById('search-bar').addEventListener('input', function (e) {
+        const searchQuery = e.target.value.toLowerCase();
+        const productItems = document.querySelectorAll('.product-item');
+
+        productItems.forEach(item => {
+            const title = item.getAttribute('data-title');
+            if (title.includes(searchQuery)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+
+    // Add to Cart functionality
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const productId = this.getAttribute('data-index');
+            const button = this;
+
+            // Perform AJAX request
+            fetch(`{% url 'core:add-to-cart' %}?id=${productId}&qty=1`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.totalcartitems) {
+                    // Change button to a tick
+                    button.innerHTML = '<i class="fi-rs-check text-white"></i>';
+                    button.style.backgroundColor = '#4CAF50';
+                    button.disabled = true;
+
+                    // Update cart count dynamically
+                    document.querySelector('.cart-count').innerText = data.totalcartitems;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+</script>
+{% endblock content %}

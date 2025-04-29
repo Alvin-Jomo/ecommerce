@@ -1,0 +1,216 @@
+{% extends 'partials/base2.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+/* Centering Page Content */
+.page-content {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f3f4f6;
+}
+
+/* Form Container Styling */
+.form-container {
+    max-width: 700px;
+    padding: 40px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    margin: auto;
+    text-align: center;
+}
+
+/* Other Styles */
+.heading_s1 h1 {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.alert {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    color: #333;
+    background-color: #f3f4f6;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    background-color: #fff;
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Password Toggle Icon */
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #555;
+    z-index: 10;
+}
+
+.toggle-password:hover {
+    color: #007bff;
+}
+
+/* Submit Button Styling */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+</style>
+
+<main class="main pages">
+    <div class="page-content">
+        <div class="form-container">
+            <div class="heading_s1">
+                <h1>Create an Account</h1>
+                <p class="text-center">Already have an account? <a href="{% url 'userauths:sign-in' %}">Login</a></p>
+            </div>
+
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ form.errors }}</strong>
+            </div>
+            {% endif %}
+
+            <form method="post" id="registrationForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                </div>
+                <div class="form-group position-relative">
+                    {{ form.password1.label_tag }}
+                    {{ form.password1 }}
+                    <span id="togglePassword1" class="toggle-password" title="Show Password">
+                        <i class="fa fa-eye" id="eyeIcon1"></i>
+                    </span>
+                </div>
+                <div class="form-group position-relative">
+                    {{ form.password2.label_tag }}
+                    {{ form.password2 }}
+                    <span id="togglePassword2" class="toggle-password" title="Show Password">
+                        <i class="fa fa-eye" id="eyeIcon2"></i>
+                    </span>
+                </div>
+                <div class="form-group">
+                    {{ form.phone.label_tag }}
+                    {{ form.phone }}
+                </div>
+                <div class="form-group">
+                    {{ form.location.label_tag }}
+                    {{ form.location }}
+                </div>
+                <div class="form-group">
+                    {{ form.manager.label_tag }}
+                     {{ form.manager }}
+                </div>
+
+                <div class="form-group mb-30">
+                    <button type="submit" class="btn">Submit &amp; Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Password Toggle Script and Input Validation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script>
+        // Password Toggle Function
+        function togglePasswordVisibility(toggleElement, inputElement, eyeIcon) {
+            toggleElement.addEventListener('click', function () {
+                const type = inputElement.getAttribute('type') === 'password' ? 'text' : 'password';
+                inputElement.setAttribute('type', type);
+                eyeIcon.classList.toggle('fa-eye');
+                eyeIcon.classList.toggle('fa-eye-slash');
+            });
+        }
+
+        // Get elements for password fields
+        const togglePassword1 = document.querySelector('#togglePassword1');
+        const passwordInput1 = document.querySelector('[name="password1"]');
+        const eyeIcon1 = document.querySelector('#eyeIcon1');
+
+        const togglePassword2 = document.querySelector('#togglePassword2');
+        const passwordInput2 = document.querySelector('[name="password2"]');
+        const eyeIcon2 = document.querySelector('#eyeIcon2');
+
+        togglePasswordVisibility(togglePassword1, passwordInput1, eyeIcon1);
+        togglePasswordVisibility(togglePassword2, passwordInput2, eyeIcon2);
+
+        // Form Validation
+        document.getElementById("registrationForm").addEventListener("submit", function(event) {
+            let isValid = true;
+
+            // Email Validation
+            const emailInput = document.querySelector('[name="email"]');
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailPattern.test(emailInput.value)) {
+                alert("Please enter a valid email address.");
+                emailInput.focus();
+                isValid = false;
+            }
+
+            // Phone Validation (10 digits, starts with 07 or 01)
+            const phoneInput = document.querySelector('[name="phone"]');
+            const phonePattern = /^(07|01)\d{8}$/;
+            if (!phonePattern.test(phoneInput.value)) {
+                alert("Please enter a valid 10-digit phone number starting with 07 or 01.");
+                phoneInput.focus();
+                isValid = false;
+            }
+
+            // If form is not valid, prevent submission
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+</main>
+
+{% endblock content %}

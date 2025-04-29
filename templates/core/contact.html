@@ -1,0 +1,121 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block content %}
+<br><br> <br>
+<main class="main pages">
+    <div class="page-content d-flex align-items-center justify-content-center" style="height: 100vh;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-8 col-lg-10">
+                    <div class="contact-form-container border border-dark p-5">
+                        <div class="contact-from-area padding-20-row-col">
+                            <h5 class="text-brand mb-10" align="center">Contact form</h5>
+
+                            <h4 class="text-success" id="message-response"></h4>
+                            <form class="contact-form-style mt-30" id="contact-form-ajax" method="POST">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="input-style mb-20">
+                                            <input name="full_name" id="full_name" placeholder="First Name" type="text" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="input-style mb-20">
+                                            <input name="email" id="email" placeholder="Your Email" type="email" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="input-style mb-20">
+                                            <input name="telephone" id="phone" placeholder="Your Phone" type="tel" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="input-style mb-20">
+                                            <input name="subject" id="subject" placeholder="Subject" type="text" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12">
+                                        <div class="textarea-style mb-30">
+                                            <textarea name="message" id="message" placeholder="Message" required></textarea>
+                                        </div>
+                                        <button id="contact-form-ajax" class="submit submit-auto-width" type="submit">Send message</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <p class="form-messege"></p>
+                        </div>
+                        <br /> <br />
+                       <h5>OR USE THE BELOW LINKS</h5>
+                        <!-- Social Media Icons Section using Font Awesome -->
+                        <div class="social-icons-container mt-4">
+                            <div class="social-icons p-3">
+                                <a href="https://wa.me/254769415419" class="social-icon" target="_blank">
+                                    <i class="fab fa-whatsapp fa-2x"></i>
+                                </a>
+                                <a href="mailto:everfreshfruits1@gmail.com" class="social-icon">
+                                    <i class="fas fa-envelope fa-2x"></i>
+                                </a>
+                                <a href="#" class="social-icon">
+                                    <i class="fab fa-linkedin fa-2x"></i>
+                                </a>
+                                <a href="#" class="social-icon">
+                                    <i class="fab fa-tiktok fa-2x"></i>
+                                </a>
+                                <a href="#" class="social-icon">
+                                    <i class="fab fa-facebook fa-2x"></i>
+                                </a>
+                                <a href="#" class="social-icon">
+                                    <i class="fab fa-twitter fa-2x"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<style>
+    .contact-form-container {
+        border: 4px solid black; /* Black 4px solid border */
+        border-radius: 15px; /* Optional: rounded corners */
+        background-color: white;
+        padding: 40px; /* Add padding to create a gap inside the form container */
+    }
+    .main.pages .container {
+        max-width: 100%;
+        padding: 20px; /* Add padding to the container for space around the form */
+    }
+
+    .social-icons-container {
+        text-align: center; /* Center align the entire social icons section */
+        align: center;
+    }
+    .social-icons a {
+        display: inline-block;
+        margin: 0 15px;
+        color: black; /* Default icon color */
+    }
+    .social-icons i {
+        transition: color 0.3s ease;
+    }
+    .social-icons i:hover {
+        color: green; /* Change color on hover */
+    }
+
+    .social-icons-container {
+        border: 2px solid black; /* Frame around the icons */
+        border-radius: 10px; /* Optional: round the corners */
+        display: inline-block; /* Shrinks the container to fit the icons */
+        padding: 10px; /* Space between the border and icons */
+        margin: 20px 0; /* Optional: space above and below the container */
+        background-color: #f9f9f9; /* Optional: background color */
+    }
+</style>
+
+<!-- Add Font Awesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<br> <br> <br>
+{% endblock content %}
